@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui" >
+    <h:head>
+        <title>Jogo da Forca</title>
+      
+    </h:head>
+    <h:body>
+
+        <div align="center">
+
+            <p:panelGrid columns="2">
+                <f:facet name="header">
+                    <h3>Jogo da Forca</h3>
+                </f:facet>
+
+                <h:form id="formCategoria">
+                    <p:outputLabel style="font-size: 70%" value="Informe seu nome:"/>
+                    <br></br>
+                    <p:inputText value="#{jogo.nomeJogador}" required="true" label="Nome"/>
+                    <br></br>
+                    <p:outputLabel style="font-size: 70%" value="Selecione uma categoria:"/>
+                    <br></br>
+                    <p:selectOneMenu id="erro" value="#{jogo.catSel}"
+                                     required="true"
+                                     requiredMessage="Selecione a categoria."
+                                     converter="#{conversorCategoria}">
+                        <f:selectItems value="#{palavrasBean.listaCategorias}" />
+
+                    </p:selectOneMenu><br/>
+                    <div align="center">
+                    <h:commandButton value="Jogar" 
+                                     action="#{jogo.jogar()}"/>
+                    </div>
+                    <p:message for="formCategoria:erro" showSummary="true" showDetail="false"/>
+                </h:form>
+            </p:panelGrid>
+        </div>
+
+    </h:body>
+</html>
+

@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <meta contentimeFaces='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+        <title>PET+</title>
+        <style>
+            body{
+                padding-left: 10%;
+                padding-right: 10%;
+                background-color: #809BC4;
+                align-items: center;
+            }
+            .form{
+                width: 400px;
+                border: 1px black solid;
+
+            }
+        </style>
+        <script type="text/javascript">
+            PrimeFaces.locales['pt'] = {
+                closeText: 'Fechar',
+                prevText: 'Anterior',
+                nextText: 'Próximo',
+                currentText: 'Começo',
+                monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+                dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+                weekHeader: 'Semana',
+                firstDay: 0,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: '',
+                timeOnlyTitle: 'Só Horas',
+                timeText: 'Tempo',
+                hourText: 'Hora',
+                minuteText: 'Minuto',
+                secondText: 'Segundo',
+                ampm: false,
+                month: 'Mês',
+                week: 'Semana',
+                day: 'Dia',
+                allDayText: 'Todo o Dia'
+            };
+
+            function diasOff(date)
+            {
+                var day = date.getDay();
+                var bool = true;
+                if (day == 1 || day == 5 || day == 6 || day == 0) {
+                    bool = false;
+                }
+
+                return [bool];
+            }
+        </script>
+    </h:head>
+    <h:body>
+        <div align="center">
+            <div class="form">
+                <p:outputLabel value="Veterinaria PET+" style="font-size: 200%"/>
+                <h:form id="mainForm">
+                    <p:panelGrid columns="2">
+                        <p:outputLabel for="edTipo"  value="Tipo Animal:" />
+                        <p:selectOneMenu value="#{marcarConsulta.animalEscolhido}"
+                                         required="true" requiredMessage="Selecione o tipo de Animal"
+                                         converter="#{animalConverter}"
+                                         id="edTipo">
+                            <f:selectItems value="#{marcarConsulta.animais}"/>
+                            <p:ajax event="change" update="vets"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="vets" value="Veterinário:"/>
+                        <p:selectOneMenu  id="vets" value="#{marcarConsulta.consulta.vet}"
+                                          required="true" requiredMessage="Selecione o Veterinario"
+                                          converter="#{veterinarioConverter}">
+                            <f:selectItems  value="#{marcarConsulta.vets}"/>
+
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Tutor:"/>
+                        <p:inputText value="#{marcarConsulta.consulta.tutor}" size="17" id="itTutor"
+                                     required="true" requiredMessage="Insira o nome do tutor!"/>
+
+
+                        <p:outputLabel value="Nome do animal:"/>
+                        <p:inputText value="#{marcarConsulta.consulta.nomeAml}" size="17" id="itAnimal" 
+                                     required="true" requiredMessage="Insira o nome do animal!"/>
+
+
+                        <p:outputLabel value="Motivo:"/>
+                        <p:inputTextarea value="#{marcarConsulta.consulta.motivo}" rows="3" cols="19" maxlength="51"
+                                         required="true" requiredMessage="Insira o motivo!"/>
+
+                        <p:outputLabel value="Telefone:"/>
+                        <p:inputMask id="edTelefone" required="true"
+                                     requiredMessage="Informe o Telefone!"
+                                     value="#{marcarConsulta.consulta.telefone}"
+                                     size="17"
+                                     mask="(99) 99999 - 9999"/>
+
+                        <p:outputLabel value="Data:"/>
+                        <p:calendar id="datetime" locale="pt" value="#{marcarConsulta.consulta.data}" pattern="dd/MM/yyyy HH:mm"
+                                    stepMinute="15"  minHour="08" maxHour="17"  beforeShowDay="diasOff" disabledWeekends="true"
+                                    required="true" requiredMessage="Insira uma data!">
+                            <f:convertDateTime pattern="dd/MM/yyyy hh:mm"/> 
+                        </p:calendar>
+
+
+                        <p:outputLabel value="  "/>
+                        <p:commandButton value="Confirmar"
+                                         update=":tabConsultas,:mainForm"
+                                         action="#{marcarConsulta.confirmar}"/>
+
+                    </p:panelGrid>
+                </h:form>
+            </div>
+            <p:dataTable id="tabConsultas"
+                         value="#{marcarConsulta.consultas}" var="c">
+
+                <p:column headerText="Animal">
+                    <h:outputText value="#{c.vet.animal.tipo}"/>
+                </p:column>
+                <p:column headerText="Veterinário">
+                    <h:outputText value="#{c.vet.nome}"/>
+                </p:column>
+                <p:column headerText="Tutor">
+                    <h:outputText value="#{c.tutor}"/>
+                </p:column>
+
+                <p:column headerText="N. Animal">
+                    <h:outputText value="#{c.nomeAml}"/>
+                </p:column>
+                <p:column headerText="Motivo">
+                    <h:outputText value="#{c.motivo}"/>
+                </p:column>
+                <p:column  headerText="Telefone">
+                    <h:outputText value="#{c.telefone}"/>
+                </p:column>
+                <p:column headerText="Data">
+
+                    <h:outputText id="dtdt" value="#{c.data}">
+                        <f:convertDateTime pattern="dd/MM/yyyy hh:mm"/>
+                    </h:outputText>
+
+
+                </p:column>
+                <p:column headerText="Ações">
+                    <h:form>
+                        <p:commandButton value="X" update=":tabConsultas"                                     
+                                         action="#{marcarConsulta.remover(c)}">
+                        </p:commandButton>          
+                    </h:form>
+                </p:column>
+            </p:dataTable>
+
+        </div>
+
+        <h:panelGrid columns="1" cellpadding="5">
+            <h:form>
+                <p:commandButton value="Cadastrar Animal" type="button" onclick="PF('dlg2').show();" />
+                <p:commandButton value="Cadastrar Veterinário" type="button" onclick="PF('dlg1').show();" />
+            </h:form>
+        </h:panelGrid>
+
+        <p:dialog header="Cadastrar Animal" widgetVar="dlg1" modal="true"  resizable="false" height="150">
+            <h:form>
+                <p:panelGrid columns="2">
+                    <h:outputText value="Especialidade:" />
+                    <p:selectOneMenu value="#{marcarConsulta.animalNewVet}"
+                                     required="true" requiredMessage="Selecione o tipo de Animal"
+                                     converter="#{animalConverter}"
+                                     id="opa">
+                        <f:selectItems value="#{marcarConsulta.animais}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Nome do Vet:" />
+                    <p:inputText value="#{marcarConsulta.novoVet}" required="true" label="Tipo de Animal"/>
+
+                    <h:outputText value=" " />
+                    <p:commandButton value="Cadastrar" action="#{marcarConsulta.addVet()}" update=":tabConsultas,:mainForm"
+                                     onclick="dialog.hide()"/> 
+
+                </p:panelGrid>
+            </h:form>
+        </p:dialog> 
+        <p:dialog header="Cadastrar Animal" widgetVar="dlg2" modal="true"  resizable="false" height="100">
+            <h:outputText value="Tipo de animal:" />
+            <h:form>
+                <p:inputText value="#{marcarConsulta.novoAnimal}" required="true" label="Tipo de Animal"/>
+                <p:commandButton value="Cadastrar" action="#{marcarConsulta.addAnimal()}" update=":tabConsultas,:mainForm"
+                                 onclick="dialog.hide()"/> 
+            </h:form>
+        </p:dialog> 
+
+
+        <p:growl autoUpdate="true"/>
+    </h:body>
+</html>
+
